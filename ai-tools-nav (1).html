@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>潮汐 AI 导航 · Tide AI Directory</title>
+
+<!-- Google Analytics 占位：替换 G-XXXXXXXXXX 为你自己的衡量ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --deep:#050c14;
+    --panel:#0c1b28;
+    --panel-2:#122a3c;
+    --line:#1e3a4d;
+    --foam:#eaf4f3;
+    --mist:#8fa9b6;
+    --teal:#3fd9c7;
+    --teal-dim:#1f6b62;
+    --coral:#ff7f5e;
+    --font-display:'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+    --font-body:'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --font-mono:'IBM Plex Mono', 'Consolas', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(63,217,199,0.10), transparent 60%),
+      var(--deep);
+    color:var(--foam);
+    font-family:var(--font-body);
+    line-height:1.6;
+    min-height:100vh;
+  }
+
+  /* ---------- Header ---------- */
+  header.site-head{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px;
+    padding:16px 32px;
+    background:rgba(5,12,20,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:1.15rem;
+    letter-spacing:0.01em;
+    white-space:nowrap;
+  }
+  .brand svg{width:26px;height:26px;flex-shrink:0;}
+  .brand .sub{
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    color:var(--mist);
+    letter-spacing:0.12em;
+    display:block;
+    font-weight:400;
+  }
+  .search-wrap{
+    flex:1;
+    max-width:420px;
+    position:relative;
+  }
+  .search-wrap input{
+    width:100%;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--foam);
+    border-radius:8px;
+    padding:9px 14px 9px 36px;
+    font-size:0.9rem;
+    font-family:var(--font-body);
+    outline:none;
+  }
+  .search-wrap input:focus{border-color:var(--teal);}
+  .search-wrap::before{
+    content:"";
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    width:14px; height:14px;
+    border:1.5px solid var(--mist);
+    border-radius:50%;
+  }
+  .search-wrap::after{
+    content:"";
+    position:absolute; left:21px; top:63%;
+    width:6px; height:1.5px;
+    background:var(--mist);
+    transform:rotate(45deg);
+  }
+  .lang-select{
+    position:relative;
+    flex-shrink:0;
+    font-family:var(--font-mono);
+  }
+  .lang-current{
+    background:var(--panel);
+    border:1px solid var(--teal-dim);
+    color:var(--teal);
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:0.8rem;
+    font-weight:600;
+    cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+  }
+  .lang-current:hover{ border-color:var(--teal); }
+  .lang-current svg{ transition:transform .15s; }
+  .lang-current.open svg{ transform:rotate(180deg); }
+  .lang-menu{
+    position:absolute; top:calc(100% + 8px); right:0;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:6px;
+    min-width:170px;
+    box-shadow:0 16px 34px -12px rgba(0,0,0,0.55);
+    display:none;
+    flex-direction:column;
+    gap:2px;
+    z-index:30;
+  }
+  .lang-menu.open{ display:flex; }
+  .lang-menu button{
+    background:transparent; border:none;
+    color:var(--foam);
+    text-align:left;
+    padding:9px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:0.85rem;
+    font-family:var(--font-body);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .lang-menu button:hover{ background:var(--panel-2); }
+  .lang-menu button.active{ color:var(--teal); font-weight:600; }
+  .lang-menu button.active::after{ content:"✓"; font-size:0.75rem; }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    max-width:1200px; margin:0 auto;
+    padding:56px 32px 28px;
+    text-align:center;
+  }
+  .hero .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    color:var(--teal);
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(1.8rem, 4vw, 3rem);
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  .hero p{
+    color:var(--mist);
+    max-width:560px;
+    margin:0 auto;
+    font-size:0.98rem;
+  }
+  .wave-divider{ width:100%; height:36px; margin-top:32px; display:block; }
+  .wave-divider path{
+    stroke:var(--teal);
+    stroke-width:1.4;
+    fill:none;
+    opacity:0.55;
+  }
+
+  /* ---------- Category filter ---------- */
+  .cat-bar{
+    max-width:1200px; margin:0 auto;
+    padding:0 32px 28px;
+    display:flex; flex-wrap:wrap; gap:10px;
+    justify-content:center;
+  }
+  .cat-chip{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--mist);
+    padding:7px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .cat-chip:hover{border-color:var(--teal);color:var(--foam);}
+  .cat-chip.active{
+    background:var(--teal);
+    color:#04211c;
+    border-color:var(--teal);
+    font-weight:600;
+  }
+
+  /* ---------- Stats / Market Pulse ---------- */
+  .stats-section{
+    max-width:1200px; margin:0 auto;
+    padding:0 32px 36px;
+  }
+  .stats-head{ text-align:center; margin-bottom:22px; }
+  .stats-head .eyebrow{
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.22em;
+    color:var(--coral); text-transform:uppercase; margin-bottom:10px;
+  }
+  .stats-head h2{
+    font-family:var(--font-display); font-weight:600; font-size:1.5rem; margin:0 0 8px;
+  }
+  .stats-head p{ color:var(--mist); font-size:0.88rem; max-width:520px; margin:0 auto; }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:14px;
+    margin-bottom:20px;
+  }
+  .stat-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px 18px 16px;
+  }
+  .stat-number{
+    font-family:var(--font-mono);
+    font-size:1.7rem;
+    font-weight:500;
+    color:var(--teal);
+    outline:none;
+    line-height:1.2;
+  }
+  .stat-number:focus{ background:rgba(63,217,199,0.08); border-radius:4px; }
+  .stat-trend{
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    margin-top:4px;
+  }
+  .stat-trend.up{ color:var(--teal); }
+  .stat-trend.down{ color:var(--coral); }
+  .stat-label{
+    font-size:0.78rem;
+    color:var(--mist);
+    margin-top:8px;
+  }
+
+  .chart-wrap{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:20px 22px 14px;
+  }
+  .chart-bars{
+    display:flex; align-items:flex-end; gap:14px;
+    height:140px;
+    padding:0 4px;
+  }
+  .chart-col{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;
+    height:100%; justify-content:flex-end;
+  }
+  .chart-bar{
+    width:100%;
+    max-width:34px;
+    background:linear-gradient(180deg, var(--teal), var(--teal-dim));
+    border-radius:4px 4px 0 0;
+  }
+  .chart-year{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    color:var(--mist);
+  }
+  .data-note{
+    margin-top:14px;
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    color:#5f7d8c;
+    border-top:1px solid var(--line);
+    padding-top:10px;
+  }
+  .layout{
+    max-width:1200px; margin:0 auto;
+    padding:0 32px 70px;
+    display:grid;
+    grid-template-columns:1fr 260px;
+    gap:28px;
+  }
+  @media (max-width:860px){ .layout{grid-template-columns:1fr;} }
+
+  .ad-slot{
+    background:var(--panel);
+    border:1px dashed #2c4a5c;
+    color:#5f7d8c;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-mono);
+    font-size:0.72rem; letter-spacing:0.04em;
+    text-align:center; border-radius:8px;
+  }
+  .ad-top{ grid-column:1 / -1; height:96px; margin-bottom:4px; }
+  .ad-bottom{ grid-column:1 / -1; height:96px; margin-top:8px; }
+  .ad-side{ height:280px; position:sticky; top:88px; }
+
+  /* ---------- Card grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+    gap:16px;
+    margin-top:20px;
+  }
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:18px;
+    display:flex; flex-direction:column; gap:10px;
+    text-decoration:none; color:inherit;
+    transition:border-color .18s, transform .18s, box-shadow .18s;
+    position:relative;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(140px 100px at 20% 0%, rgba(63,217,199,0.14), transparent 70%);
+    opacity:0; transition:opacity .25s;
+    pointer-events:none;
+  }
+  .card:hover{
+    border-color:var(--teal-dim);
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px -14px rgba(63,217,199,0.35);
+  }
+  .card:hover::before{opacity:1;}
+  .card-top{ display:flex; align-items:center; gap:10px; }
+  .card-icon{
+    width:38px; height:38px; border-radius:9px;
+    background:var(--panel-2);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:700; font-size:1rem;
+    color:var(--teal);
+    flex-shrink:0;
+  }
+  .card-name{
+    font-family:var(--font-display);
+    font-weight:600; font-size:1rem;
+    outline:none;
+  }
+  .card-tag{
+    font-family:var(--font-mono);
+    font-size:0.65rem;
+    color:var(--teal);
+    letter-spacing:0.05em;
+  }
+  .card-desc{
+    font-size:0.83rem;
+    color:var(--mist);
+    outline:none;
+    min-height:36px;
+  }
+  .card-desc:focus, .card-name:focus{
+    background:rgba(63,217,199,0.06);
+    border-radius:4px;
+  }
+  .card-visit{
+    margin-top:auto;
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--teal);
+    text-decoration:none;
+    cursor:pointer;
+    display:flex; align-items:center; gap:5px;
+    width:fit-content;
+  }
+  .card-visit:hover{ text-decoration:underline; }
+  .card.sponsored{ border-color:var(--coral); }
+  .card.sponsored .card-tag{ color:var(--coral); }
+  .card.sponsored .badge{
+    position:absolute; top:12px; right:12px;
+    font-family:var(--font-mono);
+    font-size:0.6rem;
+    color:var(--coral);
+    border:1px solid var(--coral);
+    padding:2px 7px;
+    border-radius:999px;
+  }
+
+  .card-details{ margin-top:2px; }
+  .card-details summary{
+    cursor:pointer;
+    list-style:none;
+    display:inline-flex; align-items:center; gap:5px;
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:var(--mist);
+    user-select:none;
+    padding:2px 0;
+  }
+  .card-details summary::-webkit-details-marker{ display:none; }
+  .card-details summary::before{
+    content:"▸";
+    color:var(--teal);
+    font-size:0.6rem;
+    transition:transform .2s ease;
+    display:inline-block;
+  }
+  .card-details[open] summary::before{ transform:rotate(90deg); }
+  .card-details summary:hover{ color:var(--foam); }
+  .card-full-desc{
+    font-size:0.82rem;
+    color:var(--mist);
+    line-height:1.6;
+    margin:8px 0 2px;
+    animation:detailFade .22s ease;
+  }
+  @keyframes detailFade{
+    from{ opacity:0; transform:translateY(-4px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .add-card{
+    border:1px dashed #2c4a5c;
+    background:transparent;
+    color:var(--mist);
+    display:flex; align-items:center; justify-content:center;
+    border-radius:10px;
+    cursor:pointer;
+    font-family:var(--font-mono);
+    font-size:0.8rem;
+    min-height:120px;
+  }
+  .add-card:hover{ border-color:var(--teal); color:var(--teal); }
+
+  footer.site-foot{
+    text-align:center;
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    color:#5f7d8c;
+    padding:24px;
+    border-top:1px solid var(--line);
+  }
+
+  /* ---------- Scroll reveal effects ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .7s cubic-bezier(.16,.8,.3,1), transform .7s cubic-bezier(.16,.8,.3,1);
+    will-change:opacity, transform;
+  }
+  .reveal.in-view{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .grid .reveal{ transition-delay:calc(var(--stagger, 0) * 45ms); }
+  .card.in-view{ animation:cardPop .5s cubic-bezier(.2,.9,.3,1.2) both; animation-delay:calc(var(--stagger,0) * 45ms); }
+  @keyframes cardPop{
+    0%{ transform:translateY(28px) scale(.96); opacity:0; }
+    100%{ transform:translateY(0) scale(1); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal, .card.in-view{ transition:none; animation:none; opacity:1; transform:none; }
+  }
+
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background:radial-gradient(ellipse 700px 400px at var(--mx,50%) var(--my,0%), rgba(63,217,199,0.07), transparent 60%);
+    pointer-events:none;
+    z-index:0;
+    transition:background-position .3s ease-out;
+  }
+
+  /* ---------- Ranking section ---------- */
+  .rank-section{
+    max-width:1200px; margin:0 auto;
+    padding:0 32px 60px;
+  }
+  .rank-head{ text-align:center; margin-bottom:22px; }
+  .rank-head .eyebrow{
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.22em;
+    color:var(--teal); text-transform:uppercase; margin-bottom:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .live-dot{
+    width:7px; height:7px; border-radius:50%;
+    background:#3fd97a;
+    box-shadow:0 0 0 0 rgba(63,217,122,.6);
+    animation:livePulse 1.8s infinite;
+    flex-shrink:0;
+  }
+  @keyframes livePulse{
+    0%{ box-shadow:0 0 0 0 rgba(63,217,122,.55); }
+    70%{ box-shadow:0 0 0 8px rgba(63,217,122,0); }
+    100%{ box-shadow:0 0 0 0 rgba(63,217,122,0); }
+  }
+  .rank-head h2{
+    font-family:var(--font-display); font-weight:600; font-size:1.5rem; margin:0 0 8px;
+  }
+  .rank-head p{ color:var(--mist); font-size:0.88rem; max-width:560px; margin:0 auto; }
+
+  .rank-list{
+    display:flex; flex-direction:column; gap:10px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px;
+  }
+  .rank-row{
+    display:grid;
+    grid-template-columns:36px 34px 1fr auto 120px;
+    align-items:center;
+    gap:14px;
+    padding:11px 12px;
+    border-radius:8px;
+    transition:background .15s;
+  }
+  .rank-row:hover{ background:var(--panel-2); }
+  .rank-num{
+    font-family:var(--font-mono);
+    font-size:0.95rem;
+    font-weight:600;
+    color:var(--mist);
+    text-align:center;
+  }
+  .rank-row[data-rank="1"] .rank-num{ color:#ffd35e; }
+  .rank-row[data-rank="2"] .rank-num{ color:#cbd8de; }
+  .rank-row[data-rank="3"] .rank-num{ color:#e0a15c; }
+  .rank-icon{
+    width:34px; height:34px; border-radius:8px;
+    background:var(--panel-2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1rem;
+  }
+  .rank-info{ min-width:0; }
+  .rank-name{
+    font-family:var(--font-display); font-weight:600; font-size:0.92rem;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .rank-cat{ font-family:var(--font-mono); font-size:0.68rem; color:var(--teal); }
+  .rank-usage{
+    font-family:var(--font-mono);
+    font-size:0.85rem;
+    color:var(--foam);
+    text-align:right;
+    white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .rank-usage .unit{ color:var(--mist); font-size:0.7rem; margin-left:2px; }
+  .rank-bar-wrap{
+    height:6px; border-radius:999px;
+    background:var(--panel-2);
+    overflow:hidden;
+  }
+  .rank-bar{
+    height:100%;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--teal-dim), var(--teal));
+    transition:width .5s cubic-bezier(.2,.8,.3,1);
+  }
+  .rank-trend{
+    font-family:var(--font-mono);
+    font-size:0.68rem;
+    margin-top:3px;
+  }
+  .rank-trend.up{ color:var(--teal); }
+  .rank-trend.down{ color:var(--coral); }
+  @media (max-width:640px){
+    .rank-row{ grid-template-columns:26px 30px 1fr 90px; }
+    .rank-bar-wrap{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <div class="brand">
+    <svg viewBox="0 0 32 32" fill="none"><path d="M2 20c3 0 3-4 6-4s3 4 6 4 3-4 6-4 3 4 6 4 3-4 6-4" stroke="#3fd9c7" stroke-width="2" stroke-linecap="round"/><path d="M2 26c3 0 3-4 6-4s3 4 6 4 3-4 6-4 3 4 6 4 3-4 6-4" stroke="#3fd9c7" stroke-width="2" stroke-linecap="round" opacity="0.4"/></svg>
+    <span>
+      <span data-i18n="brand">潮汐 AI 导航</span>
+      <span class="sub" data-i18n="brand-sub">TIDE · AI TOOL DIRECTORY</span>
+    </span>
+  </div>
+  <div class="search-wrap">
+    <input type="text" id="search" data-i18n-placeholder="search-ph" placeholder="搜索工具名称…">
+  </div>
+  <div class="lang-select" id="langSelect">
+    <button class="lang-current" id="langCurrent" onclick="toggleLangMenu()">
+      <span id="langCurrentLabel">中文</span>
+      <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 3 L5 7 L9 3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+    </button>
+    <div class="lang-menu" id="langMenu">
+      <button data-lang="zh" class="active" onclick="setLang('zh')">中文</button>
+      <button data-lang="en" onclick="setLang('en')">English</button>
+      <button data-lang="ja" onclick="setLang('ja')">日本語</button>
+      <button data-lang="fr" onclick="setLang('fr')">Français</button>
+      <button data-lang="ru" onclick="setLang('ru')">Русский</button>
+      <button data-lang="de" onclick="setLang('de')">Deutsch</button>
+      <button data-lang="ko" onclick="setLang('ko')">한국어</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="eyebrow" data-i18n="eyebrow">CURATED AI TOOLS</div>
+  <h1 data-i18n="hero-title">潜入 AI 工具的深海</h1>
+  <p data-i18n="hero-desc">按分类收录写作、图像、编程、设计与效率类 AI 工具，持续更新。</p>
+  <svg class="wave-divider" viewBox="0 0 1200 36" preserveAspectRatio="none">
+    <path d="M0 18 Q 60 4 120 18 T 240 18 T 360 18 T 480 18 T 600 18 T 720 18 T 840 18 T 960 18 T 1080 18 T 1200 18"/>
+  </svg>
+</div>
+
+<div class="cat-bar" id="catBar">
+  <button class="cat-chip active" data-cat="all" data-i18n="cat-all">全部</button>
+  <button class="cat-chip" data-cat="writing" data-i18n="cat-writing">写作</button>
+  <button class="cat-chip" data-cat="image" data-i18n="cat-image">图像</button>
+  <button class="cat-chip" data-cat="code" data-i18n="cat-code">编程</button>
+  <button class="cat-chip" data-cat="design" data-i18n="cat-design">设计</button>
+  <button class="cat-chip" data-cat="audio" data-i18n="cat-audio">音频</button>
+  <button class="cat-chip" data-cat="video" data-i18n="cat-video">视频</button>
+  <button class="cat-chip" data-cat="agent" data-i18n="cat-agent">智能体</button>
+  <button class="cat-chip" data-cat="productivity" data-i18n="cat-productivity">效率</button>
+</div>
+
+<div class="layout">
+  <div class="ad-slot ad-top" data-i18n="ad-top">广告位（顶部横幅 970×90）</div>
+
+  <main>
+    <div class="grid" id="grid">
+
+      <!-- ========== 🏆 写作类 No.1 ========== -->
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">🏆</div>
+          <div><div class="card-name">ChatGPT</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">OpenAI 出品，2015 年由 Sam Altman、Elon Musk（后退出）、Greg Brockman、Ilya Sutskever 等人在旧金山创立，最初是家非营利研究机构。2022 年 11 月 30 日 ChatGPT 上线，几天内用户破百万，把“聊天机器人”重新带回了大众视野。</p>
+        </details>
+        <a class="card-visit" href="https://chat.openai.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 🎨 图像类 No.1 ========== -->
+      <div class="card" data-cat="image">
+        <div class="card-top">
+          <div class="card-icon">🎨</div>
+          <div><div class="card-name">Midjourney</div><div class="card-tag" data-i18n="cat-image">图像</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">由 David Holz 创立，2021 年成立于旧金山。团队一度不到 20 人，全靠 Discord 社区跑起来，几乎不融资也很少接受媒体采访，是生成式图像圈里少见的“闷头干活”型公司。</p>
+        </details>
+        <a class="card-visit" href="https://www.midjourney.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 💻 编程类 No.1 ========== -->
+      <div class="card" data-cat="code">
+        <div class="card-top">
+          <div class="card-icon">💻</div>
+          <div><div class="card-name">GitHub Copilot</div><div class="card-tag" data-i18n="cat-code">编程</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">由微软旗下 GitHub 联合 OpenAI 打造，2021 年 6 月先放出技术预览版，2022 年 6 月正式收费上线。它是第一款被大规模普及的 AI 代码补全工具，把“AI 结对编程”变成了日常说法。</p>
+        </details>
+        <a class="card-visit" href="https://github.com/features/copilot" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 📢 广告位 ========== -->
+      <div class="card sponsored" data-cat="all">
+        <span class="badge" data-i18n="sponsored">推广</span>
+        <div class="card-top">
+          <div class="card-icon">Ad</div>
+          <div><div class="card-name" contenteditable="true">广告位 · 工具卡片</div><div class="card-tag" data-i18n="sponsored">推广</div></div>
+        </div>
+        <div class="card-desc" contenteditable="true" data-i18n="desc-ad">此处可放置原生广告或推广工具，样式与普通卡片一致。</div>
+      </div>
+
+      <!-- ========== 🎯 设计类 No.1 ========== -->
+      <div class="card" data-cat="design">
+        <div class="card-top">
+          <div class="card-icon">🎯</div>
+          <div><div class="card-name">Canva AI</div><div class="card-tag" data-i18n="cat-design">设计</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Canva 本体由 Melanie Perkins、Cliff Obrecht 和 Cameron Adams 于 2012 年在澳大利亚珀斯创立，靠在线设计工具起家。2023 年前后陆续加入 AI 功能，2024 年又收购了 Leonardo AI 补强图像生成能力。</p>
+        </details>
+        <a class="card-visit" href="https://www.canva.com/ai/" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 🎙️ 音频类 No.1 ========== -->
+      <div class="card" data-cat="audio">
+        <div class="card-top">
+          <div class="card-icon">🎙️</div>
+          <div><div class="card-name">ElevenLabs</div><div class="card-tag" data-i18n="cat-audio">音频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2022 年由两位波兰工程师 Piotr Dąbkowski 和 Mati Staniszewski 在伦敦创立，两人都在谷歌待过。据说最初动机是想解决外语电影配音生硬的问题，后来做成了业内公认最自然的 AI 语音公司之一。</p>
+        </details>
+        <a class="card-visit" href="https://elevenlabs.io" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== ⚡ 效率类 No.1 ========== -->
+      <div class="card" data-cat="productivity">
+        <div class="card-top">
+          <div class="card-icon">⚡</div>
+          <div><div class="card-name">Perplexity AI</div><div class="card-tag" data-i18n="cat-productivity">效率</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2022 年由 Aravind Srinivas 等四人在旧金山创立，Srinivas 此前是 OpenAI 的研究员。团队想做的是“查资料还能说清楚出处”的搜索引擎，定位卡在搜索引擎和聊天机器人中间。</p>
+        </details>
+        <a class="card-visit" href="https://www.perplexity.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 🧠 写作类 No.2 ========== -->
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">🧠</div>
+          <div><div class="card-name">Claude</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">背后的 Anthropic 由 Dario Amodei 和 Daniela Amodei 兄妹在 2021 年创立，两人都曾是 OpenAI 的核心成员，出走后带着一批人在旧金山另起炉灶，专注做 AI 安全方向的研究。</p>
+        </details>
+        <a class="card-visit" href="https://claude.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 🔥 编程类 No.2 ========== -->
+      <div class="card" data-cat="code">
+        <div class="card-top">
+          <div class="card-icon">🔥</div>
+          <div><div class="card-name">Cursor</div><div class="card-tag" data-i18n="cat-code">编程</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">由 Anysphere 团队打造，2022 年 Michael Truell、Sualeh Asif、Arvid Lunnemark、Aman Sanger 四个 MIT 背景的年轻人在纽约创立，2023 年发布 Cursor，几年内估值涨得很快。</p>
+        </details>
+        <a class="card-visit" href="https://cursor.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 写作类 更多 ========== -->
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">✨</div>
+          <div><div class="card-name">Gemini</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">谷歌旗下产品，由 2023 年合并了 Google Brain 与 DeepMind 后成立的 Google DeepMind 打造，同年 12 月正式发布，是谷歌面对 ChatGPT 冲击给出的正面回应。</p>
+        </details>
+        <a class="card-visit" href="https://gemini.google.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">🐋</div>
+          <div><div class="card-name">DeepSeek</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2023 年由量化对冲基金幻方量化的创始人梁文锋在杭州创立，背靠幻方多年积累的算力和资金，走的是埋头搞研究的路子。2025 年初 R1 模型发布后，一度让整个全球 AI 圈都紧张了一阵。</p>
+        </details>
+        <a class="card-visit" href="https://www.deepseek.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">🌙</div>
+          <div><div class="card-name">Kimi</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">背后公司月之暗面成立于 2023 年 3 月，创始人杨植麟毕业于清华、又在卡内基梅隆读了博士，公司名字取自平克·弗洛伊德的专辑《月之暗面》。同年 10 月推出支持 20 万字输入的 Kimi，一炮打响。</p>
+        </details>
+        <a class="card-visit" href="https://kimi.moonshot.cn" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">📝</div>
+          <div><div class="card-name">Grammarly</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2009 年由三位乌克兰工程师 Alex Shevchenko、Max Lytvyn 和 Dmytro Lider 创立，最早做的是拼写和查重工具，后来慢慢演变成现在这个覆盖全网输入框的 AI 写作助手。</p>
+        </details>
+        <a class="card-visit" href="https://www.grammarly.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="writing">
+        <div class="card-top">
+          <div class="card-icon">🪄</div>
+          <div><div class="card-name">Jasper</div><div class="card-tag" data-i18n="cat-writing">写作</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2021 年由 Dave Rogenmoser 等几位创始人在得州创立，前身是个叫 Headlime 的小工具。赶上生成式 AI 风口后改名 Jasper，转向服务企业营销团队的内容生成赛道。</p>
+        </details>
+        <a class="card-visit" href="https://www.jasper.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 图像类 更多 ========== -->
+      <div class="card" data-cat="image">
+        <div class="card-top">
+          <div class="card-icon">🖼️</div>
+          <div><div class="card-name">DALL·E 3</div><div class="card-tag" data-i18n="cat-image">图像</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">OpenAI 出品，DALL·E 系列 2021 年初首次亮相，第三代在 2023 年随 ChatGPT 一起开放，是目前和大语言模型结合得最紧密的图像生成模型之一。</p>
+        </details>
+        <a class="card-visit" href="https://openai.com/index/dall-e-3/" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="image">
+        <div class="card-top">
+          <div class="card-icon">🌈</div>
+          <div><div class="card-name">Stable Diffusion</div><div class="card-tag" data-i18n="cat-image">图像</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">背后的 Stability AI 由 Emad Mostaque 于 2019 年在伦敦创立，2022 年开源发布 Stable Diffusion 后迅速引爆全球图像生成社区，是少数坚持走开源路线的头部模型。</p>
+        </details>
+        <a class="card-visit" href="https://stability.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="image">
+        <div class="card-top">
+          <div class="card-icon">🔥</div>
+          <div><div class="card-name">Adobe Firefly</div><div class="card-tag" data-i18n="cat-image">图像</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Adobe 是一家 1982 年就成立的老牌软件公司，Firefly 是它 2023 年才推出的生成式 AI 系列，专门强调训练数据来源合规，出来的图可以放心拿去商用。</p>
+        </details>
+        <a class="card-visit" href="https://www.adobe.com/products/firefly.html" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="image">
+        <div class="card-top">
+          <div class="card-icon">🎭</div>
+          <div><div class="card-name">Leonardo AI</div><div class="card-tag" data-i18n="cat-image">图像</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2022 年底由 JJ Fiasson 带队在悉尼创立，最初瞄准的是游戏美术资产生成。2024 年被设计工具巨头 Canva 收购，现在是 Canva 生态里的图像生成引擎。</p>
+        </details>
+        <a class="card-visit" href="https://leonardo.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="image">
+        <div class="card-top">
+          <div class="card-icon">💫</div>
+          <div><div class="card-name">即梦 AI</div><div class="card-tag" data-i18n="cat-image">图像</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">字节跳动旗下剪映团队研发，前身叫 Dreamina，2024 年 3 月开始内测，同年 5 月改名“即梦”。背靠字节自研的 Seedream、Seedance 等模型，是国内跑得比较快的 AI 创作平台之一。</p>
+        </details>
+        <a class="card-visit" href="https://jimeng.jianying.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 编程类 更多 ========== -->
+      <div class="card" data-cat="code">
+        <div class="card-top">
+          <div class="card-icon">⌨️</div>
+          <div><div class="card-name">Tabnine</div><div class="card-tag" data-i18n="cat-code">编程</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">前身叫 Codota，2013 年由以色列工程师 Eran Yahav 创立，最早做代码搜索，后来转型做 AI 代码补全并改名 Tabnine，一直拿隐私和私有化部署当卖点。</p>
+        </details>
+        <a class="card-visit" href="https://www.tabnine.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="code">
+        <div class="card-top">
+          <div class="card-icon">🤖</div>
+          <div><div class="card-name">Devin</div><div class="card-tag" data-i18n="cat-code">编程</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">背后公司 Cognition 由 Scott Wu 等三位竞赛编程出身的年轻人 2023 年在旧金山创立，2024 年 3 月发布 Devin，号称“AI 软件工程师”，2025 年还收购了同类产品 Windsurf。</p>
+        </details>
+        <a class="card-visit" href="https://devin.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="code">
+        <div class="card-top">
+          <div class="card-icon">🧩</div>
+          <div><div class="card-name">Replit AI</div><div class="card-tag" data-i18n="cat-code">编程</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Replit 本体 2016 年由 Amjad Masad 等人创立，最早是个在线代码运行工具，随着大模型兴起逐步加入 AI 助手能力，主打从想法直接到能跑起来的应用。</p>
+        </details>
+        <a class="card-visit" href="https://replit.com/ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="code">
+        <div class="card-top">
+          <div class="card-icon">🈶</div>
+          <div><div class="card-name">通义灵码</div><div class="card-tag" data-i18n="cat-code">编程</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">由阿里云和通义实验室联合研发，2023 年 10 月 31 日在云栖大会上首次发布，是国内大厂里做得比较早、用户规模也比较大的 AI 编程助手之一。</p>
+        </details>
+        <a class="card-visit" href="https://tongyi.aliyun.com/lingma" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 设计类 更多 ========== -->
+      <div class="card" data-cat="design">
+        <div class="card-top">
+          <div class="card-icon">🧷</div>
+          <div><div class="card-name">Figma AI</div><div class="card-tag" data-i18n="cat-design">设计</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Figma 由 Dylan Field 和 Evan Wallace 于 2012 年创立，最早是个浏览器里的协作设计工具，2023 年前后逐步把 AI 能力加进产品，2024 年曾传出被 Adobe 收购但最终没能成行。</p>
+        </details>
+        <a class="card-visit" href="https://www.figma.com/ai/" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="design">
+        <div class="card-top">
+          <div class="card-icon">🧱</div>
+          <div><div class="card-name">Framer AI</div><div class="card-tag" data-i18n="cat-design">设计</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Framer 最早由 Koen Bok 和 Jorn van Dijk 在荷兰创立，本是设计师用的原型工具，后来转型做 AI 建站，一句话生成网站是它这几年主推的方向。</p>
+        </details>
+        <a class="card-visit" href="https://www.framer.com/ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="design">
+        <div class="card-top">
+          <div class="card-icon">📐</div>
+          <div><div class="card-name">Uizard</div><div class="card-tag" data-i18n="cat-design">设计</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2017 年由 Tony Beltramelli 在丹麦哥本哈根创立，点子源自他在哥本哈根 IT 大学读书时做的深度学习研究，专注把手绘草图和文字快速变成产品原型。</p>
+        </details>
+        <a class="card-visit" href="https://uizard.io" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 音频类 更多 ========== -->
+      <div class="card" data-cat="audio">
+        <div class="card-top">
+          <div class="card-icon">🎵</div>
+          <div><div class="card-name">Suno</div><div class="card-tag" data-i18n="cat-audio">音频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2022 年由 Mikey Shulman 等四位前同事在美国剑桥（麻省）创立，几人此前都在金融 AI 公司 Kensho 共事，业余都爱好音乐，后来干脆把爱好做成了公司。</p>
+        </details>
+        <a class="card-visit" href="https://suno.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="audio">
+        <div class="card-top">
+          <div class="card-icon">🎧</div>
+          <div><div class="card-name">Udio</div><div class="card-tag" data-i18n="cat-audio">音频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2023 年底由前谷歌 DeepMind 研究员 David Ding 等五人在纽约创立，公司注册名叫 Uncharted Labs，团队此前参与过谷歌 Imagen、Lyria 等生成模型项目。</p>
+        </details>
+        <a class="card-visit" href="https://www.udio.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="audio">
+        <div class="card-top">
+          <div class="card-icon">🎤</div>
+          <div><div class="card-name">讯飞听见</div><div class="card-tag" data-i18n="cat-audio">音频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">母公司科大讯飞 1999 年由刘庆峰等中国科学技术大学的师生在合肥创立，深耕语音识别二十多年，“听见”系列产品 2015 年发布，是国内语音转写领域的老牌选手。</p>
+        </details>
+        <a class="card-visit" href="https://www.iflyrec.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 视频类 新分类 ========== -->
+      <div class="card" data-cat="video">
+        <div class="card-top">
+          <div class="card-icon">🎬</div>
+          <div><div class="card-name">Runway</div><div class="card-tag" data-i18n="cat-video">视频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2018 年由 Cristóbal Valenzuela、Alejandro Matamala 和 Anastasis Germanidis 三人在纽约创立，几人相识于纽约大学的 ITP 项目，是最早一批做 AI 视频生成的团队之一。</p>
+        </details>
+        <a class="card-visit" href="https://runwayml.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="video">
+        <div class="card-top">
+          <div class="card-icon">🌀</div>
+          <div><div class="card-name">Sora</div><div class="card-tag" data-i18n="cat-video">视频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">OpenAI 出品，2024 年 2 月首次亮相，当时放出的样片一度让不少人怀疑是不是真拍的，后续逐步向更多用户开放使用。</p>
+        </details>
+        <a class="card-visit" href="https://openai.com/sora" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="video">
+        <div class="card-top">
+          <div class="card-icon">⚡</div>
+          <div><div class="card-name">Pika</div><div class="card-tag" data-i18n="cat-video">视频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2023 年由两位斯坦福 AI 博士生 Demi Guo 和 Chenlin Meng 休学创立，起因是两人参加了 Runway 办的一场“AI 电影节”，觉得现有工具都不够好用，索性自己做了一个。</p>
+        </details>
+        <a class="card-visit" href="https://pika.art" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="video">
+        <div class="card-top">
+          <div class="card-icon">🀄</div>
+          <div><div class="card-name">可灵 AI</div><div class="card-tag" data-i18n="cat-video">视频</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">快手自研的视频生成大模型，2024 年 6 月上线，2025 年 4 月快手把它升级为独立事业部，是国产视频生成模型里发展速度比较快的一个。</p>
+        </details>
+        <a class="card-visit" href="https://klingai.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 智能体类 新分类 ========== -->
+      <div class="card" data-cat="agent">
+        <div class="card-top">
+          <div class="card-icon">🔗</div>
+          <div><div class="card-name">Coze</div><div class="card-tag" data-i18n="cat-agent">智能体</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">字节跳动出品，2024 年 2 月 1 日正式上线，主打零代码搭建智能体，2025 年 7 月还把核心引擎 Coze Studio 开源了出来。</p>
+        </details>
+        <a class="card-visit" href="https://www.coze.com" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="agent">
+        <div class="card-top">
+          <div class="card-icon">🖐️</div>
+          <div><div class="card-name">Manus</div><div class="card-tag" data-i18n="cat-agent">智能体</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">背后公司蝴蝶效应由肖弘 2022 年创立，最早做的是 AI 浏览器插件 Monica。2025 年 3 月联合季逸超、张涛推出通用智能体 Manus 后迅速走红，2025 年底被 Meta 以数十亿美元收购。</p>
+        </details>
+        <a class="card-visit" href="https://manus.im" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="agent">
+        <div class="card-top">
+          <div class="card-icon">🛠️</div>
+          <div><div class="card-name">AutoGPT</div><div class="card-tag" data-i18n="cat-agent">智能体</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">由英国开发者 Toran Bruce Richards（网名 Significant Gravitas）2023 年 3 月以个人项目形式发布在 GitHub 上，是最早出圈的开源自主智能体项目之一，后来不少 Agent 项目都受它启发。</p>
+        </details>
+        <a class="card-visit" href="https://agpt.co" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <!-- ========== 效率类 更多 ========== -->
+      <div class="card" data-cat="productivity">
+        <div class="card-top">
+          <div class="card-icon">🦦</div>
+          <div><div class="card-name">Otter.ai</div><div class="card-tag" data-i18n="cat-productivity">效率</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">2016 年由 Sam Liang 和 Yun Fu 在美国山景城创立，公司最初叫 AISense，专注语音识别和会议转写，是这个赛道里起步比较早的独立创业公司。</p>
+        </details>
+        <a class="card-visit" href="https://otter.ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="productivity">
+        <div class="card-top">
+          <div class="card-icon">📓</div>
+          <div><div class="card-name">Notion AI</div><div class="card-tag" data-i18n="cat-productivity">效率</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Notion 本体由 Ivan Zhao 和 Simon Last 于 2013 年创立，几经波折才做出现在的笔记产品，2023 年在原有工具基础上加入了 Notion AI 功能。</p>
+        </details>
+        <a class="card-visit" href="https://www.notion.so/product/ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <div class="card" data-cat="productivity">
+        <div class="card-top">
+          <div class="card-icon">🔀</div>
+          <div><div class="card-name">Zapier AI</div><div class="card-tag" data-i18n="cat-productivity">效率</div></div>
+        </div>
+        <details class="card-details">
+          <summary data-i18n="detail-toggle">查看详情</summary>
+          <p class="card-full-desc">Zapier 由 Wade Foster、Bryan Helmig 和 Mike Knoop 三人于 2011 年创立，一直是自动化工作流领域的头部产品，2023 年前后开始把 AI 能力整合进触发逻辑里。</p>
+        </details>
+        <a class="card-visit" href="https://zapier.com/ai" target="_blank" rel="noopener" data-i18n="visit">前往访问 →</a>
+      </div>
+
+      <button class="add-card" id="addCardBtn" data-i18n="add-card">+ 添加工具卡片</button>
+
+    </div>
+  </main>
+
+  <aside>
+    <div class="ad-slot ad-side" data-i18n="ad-side">广告位（侧边栏 300×600）</div>
+  </aside>
+
+  <div class="ad-slot ad-bottom" data-i18n="ad-bottom">广告位（底部横幅）</div>
+</div>
+
+<section class="stats-section">
+  <div class="stats-head">
+    <div class="eyebrow" data-i18n="econ-eyebrow">MARKET DATA</div>
+    <h2 data-i18n="econ-title">AI 产业经济脉动</h2>
+    <p data-i18n="econ-desc">融资、市场规模与增长趋势，数字可直接点击编辑，替换为你的最新数据。</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-number" contenteditable="true">$638B</div>
+      <div class="stat-trend up" data-i18n="trend-market">↑ +21% YoY</div>
+      <div class="stat-label" data-i18n="stat-market">全球 AI 市场规模（2026E）</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" contenteditable="true">$142B</div>
+      <div class="stat-trend up" data-i18n="trend-funding">↑ +14% YTD</div>
+      <div class="stat-label" data-i18n="stat-funding">年内 AI 融资总额</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" contenteditable="true">326</div>
+      <div class="stat-trend up" data-i18n="trend-unicorn">↑ +38 家</div>
+      <div class="stat-label" data-i18n="stat-unicorn">AI 独角兽企业数量</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" contenteditable="true">+28%</div>
+      <div class="stat-trend down" data-i18n="trend-growth">↓ 较上季度</div>
+      <div class="stat-label" data-i18n="stat-growth">季度融资环比增速</div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-bars">
+      <div class="chart-col"><div class="chart-bar" style="height:28%;"></div><span class="chart-year">2021</span></div>
+      <div class="chart-col"><div class="chart-bar" style="height:46%;"></div><span class="chart-year">2022</span></div>
+      <div class="chart-col"><div class="chart-bar" style="height:40%;"></div><span class="chart-year">2023</span></div>
+      <div class="chart-col"><div class="chart-bar" style="height:64%;"></div><span class="chart-year">2024</span></div>
+      <div class="chart-col"><div class="chart-bar" style="height:82%;"></div><span class="chart-year">2025</span></div>
+      <div class="chart-col"><div class="chart-bar" style="height:100%;"></div><span class="chart-year">2026</span></div>
+    </div>
+    <div class="data-note" data-i18n="data-note">※ 以上数据为占位示例，请替换为真实统计数据后再发布。柱状高度可在代码中调整 style="height:.."。</div>
+  </div>
+</section>
+
+<section class="rank-section">
+  <div class="rank-head">
+    <div class="eyebrow"><span class="live-dot"></span><span data-i18n="rank-eyebrow">LIVE USAGE RANKING</span></div>
+    <h2 data-i18n="rank-title">全网 AI 工具实时使用量排行</h2>
+    <p data-i18n="rank-desc">根据访问量、活跃用户与增长趋势大数据统计生成，数值每隔数秒自动刷新一次。</p>
+  </div>
+
+  <div class="rank-list" id="rankList"></div>
+
+  <div class="data-note" data-i18n="rank-note">※ 排行数据为模拟示例，用于演示实时刷新效果；接入真实统计 API 后即可展示线上真实排名。</div>
+</section>
+
+<footer class="site-foot" data-i18n="footer">© 2026 潮汐 AI 导航 · 页面模板</footer>
+
+<script>
+const dict = {
+  zh: {
+    "brand":"潮汐 AI 导航",
+    "brand-sub":"TIDE · AI 工具导航",
+    "search-ph":"搜索工具名称…",
+    "eyebrow":"精选 AI 工具",
+    "hero-title":"潜入 AI 工具的深海",
+    "hero-desc":"按分类收录写作、图像、编程、设计与效率类 AI 工具，持续更新。",
+    "cat-all":"全部","cat-writing":"写作","cat-image":"图像","cat-code":"编程",
+    "cat-design":"设计","cat-audio":"音频","cat-video":"视频","cat-agent":"智能体","cat-productivity":"效率",
+    "ad-top":"广告位（顶部横幅 970×90）",
+    "ad-side":"广告位（侧边栏 300×600）",
+    "ad-bottom":"广告位（底部横幅）",
+    "visit":"前往访问 →",
+    "detail-toggle":"查看详情",
+    "sponsored":"推广",
+    "add-card":"+ 添加工具卡片",
+    "econ-eyebrow":"经济数据",
+    "econ-title":"AI 产业经济脉动",
+    "econ-desc":"融资、市场规模与增长趋势，数字可直接点击编辑，替换为你的最新数据。",
+    "stat-market":"全球 AI 市场规模（2026E）",
+    "stat-funding":"年内 AI 融资总额",
+    "stat-unicorn":"AI 独角兽企业数量",
+    "stat-growth":"季度融资环比增速",
+    "data-note":"※ 以上数据为占位示例，请替换为真实统计数据后再发布。",
+    "trend-market":"↑ +21% 同比",
+    "trend-funding":"↑ +14% 年内",
+    "trend-unicorn":"↑ 新增 38 家",
+    "trend-growth":"↓ 较上季度",
+    "desc-chatgpt":"OpenAI 王牌 AI 对话工具，月活 2 亿+，支持写作、翻译、润色全覆盖。",
+    "desc-midjourney":"全球最热 AI 图像生成工具，V6 画质惊艳，Discord 集成操作。",
+    "desc-copilot":"全球开发者首选 AI 编程助手，代码补全与 Chat 一体化，VS Code/JetBrains 无缝集成。",
+    "desc-ad":"此处可放置原生广告或推广工具，样式与普通卡片一致。",
+    "desc-canva":"AI 驱动一站式设计平台，一键生成海报、PPT 与品牌套件，1.5 亿用户首选。",
+    "desc-elevenlabs":"全球顶级 AI 语音合成与克隆平台，支持 29 种语言，自然度接近真人。",
+    "desc-perplexity":"AI 搜索引擎，实时联网带引用来源，学术/研究/深度问题首选工具。",
+    "desc-claude":"Anthropic 出品，超长 200K 上下文，深度分析/创意写作/长文档处理能力极强。",
+    "desc-cursor":"AI-first 编辑器，基于 VS Code，整项目理解 + 一键重构，2025 增长最快的编程工具。",
+    "rank-eyebrow":"实时使用量排行",
+    "rank-title":"全网 AI 工具实时使用量排行",
+    "rank-desc":"根据访问量、活跃用户与增长趋势大数据统计生成，数值每隔数秒自动刷新一次。",
+    "rank-note":"※ 排行数据为模拟示例，用于演示实时刷新效果；接入真实统计 API 后即可展示线上真实排名。",
+    "footer":"© 2026 潮汐 AI 导航 · 页面模板"
+  },
+  en: {
+    "brand":"Tide AI Directory",
+    "brand-sub":"TIDE · AI TOOL DIRECTORY",
+    "search-ph":"Search tools…",
+    "eyebrow":"CURATED AI TOOLS",
+    "hero-title":"Dive Into the AI Deep",
+    "hero-desc":"AI tools sorted by category — writing, image, code, design and productivity.",
+    "cat-all":"All","cat-writing":"Writing","cat-image":"Image","cat-code":"Code",
+    "cat-design":"Design","cat-audio":"Audio","cat-video":"Video","cat-agent":"Agents","cat-productivity":"Productivity",
+    "ad-top":"Ad Slot (Top Banner 970×90)",
+    "ad-side":"Ad Slot (Sidebar 300×600)",
+    "ad-bottom":"Ad Slot (Bottom Banner)",
+    "visit":"Visit site →",
+    "detail-toggle":"Details",
+    "sponsored":"Sponsored",
+    "add-card":"+ Add tool card",
+    "econ-eyebrow":"MARKET DATA",
+    "econ-title":"AI Industry Pulse",
+    "econ-desc":"Funding, market size and growth trends — click any number to edit with your own data.",
+    "stat-market":"Global AI Market Size (2026E)",
+    "stat-funding":"YTD AI Funding Total",
+    "stat-unicorn":"AI Unicorn Companies",
+    "stat-growth":"QoQ Funding Growth",
+    "data-note":"※ Figures shown are placeholders — replace with real data before publishing.",
+    "trend-market":"↑ +21% YoY",
+    "trend-funding":"↑ +14% YTD",
+    "trend-unicorn":"↑ +38 new",
+    "trend-growth":"↓ vs last quarter",
+    "desc-chatgpt":"OpenAI's flagship AI tool, 200M+ monthly users — writing, translation, and tone polishing.",
+    "desc-midjourney":"World's hottest AI image generator, stunning V6 quality, integrated via Discord.",
+    "desc-copilot":"Top AI coding assistant worldwide — code completion + chat, seamless VS Code/JetBrains integration.",
+    "desc-ad":"Place native ads or promoted tools here — styled to match regular cards.",
+    "desc-canva":"AI-powered all-in-one design platform — posters, PPTs, and brand kits in one click, 150M+ users.",
+    "desc-elevenlabs":"World-class AI voice synthesis & cloning, 29 languages, near-human naturalness.",
+    "desc-perplexity":"AI search engine with real-time web access and citations — top choice for research and deep questions.",
+    "desc-claude":"By Anthropic — 200K context window, excels at deep analysis, creative writing, and long documents.",
+    "desc-cursor":"AI-first editor built on VS Code — full-project understanding + one-click refactoring, fastest-growing dev tool of 2025.",
+    "rank-eyebrow":"LIVE USAGE RANKING",
+    "rank-title":"Real-Time AI Tool Usage Ranking",
+    "rank-desc":"Generated from traffic, active users, and growth trend data — refreshes every few seconds.",
+    "rank-note":"※ Ranking data is a simulated demo. Connect a real analytics API for live production rankings.",
+    "footer":"© 2026 Tide AI Directory · Page Template"
+  },
+  ja: {
+    "brand":"潮汐AIナビ",
+    "brand-sub":"TIDE・AIツールディレクトリ",
+    "search-ph":"ツール名で検索…",
+    "eyebrow":"厳選AIツール",
+    "hero-title":"AIツールの深海へ",
+    "hero-desc":"ライティング、画像、コーディング、デザイン、生産性向上のAIツールをカテゴリ別に掲載。随時更新。",
+    "cat-all":"すべて","cat-writing":"ライティング","cat-image":"画像","cat-code":"コード",
+    "cat-design":"デザイン","cat-audio":"音声","cat-video":"動画","cat-agent":"エージェント","cat-productivity":"生産性",
+    "ad-top":"広告枠（トップバナー 970×90）",
+    "ad-side":"広告枠（サイドバー 300×600）",
+    "ad-bottom":"広告枠（フッターバナー）",
+    "visit":"サイトへ →",
+    "detail-toggle":"詳細を見る",
+    "sponsored":"広告",
+    "add-card":"+ ツールを追加",
+    "econ-eyebrow":"マーケットデータ",
+    "econ-title":"AI産業の経済動向",
+    "econ-desc":"資金調達、市場規模、成長トレンド。数字はクリックして編集できます。",
+    "stat-market":"世界のAI市場規模（2026年予測）",
+    "stat-funding":"年間AI資金調達総額",
+    "stat-unicorn":"AIユニコーン企業数",
+    "stat-growth":"四半期ごとの資金調達成長率",
+    "data-note":"※ 表示データはサンプルです。公開前に実データに置き換えてください。",
+    "trend-market":"↑ 前年比 +21%",
+    "trend-funding":"↑ 年初来 +14%",
+    "trend-unicorn":"↑ 新規38社",
+    "trend-growth":"↓ 前四半期比",
+    "desc-chatgpt":"OpenAIの主力AIツール、月間2億人超のユーザー — 文章作成、翻訳、トーン調整に対応。",
+    "desc-midjourney":"世界で最も注目されるAI画像生成ツール、V6の高画質、Discordで操作。",
+    "desc-copilot":"世界トップのAIプログラミング支援 — コード補完とチャット、VS Code/JetBrainsとシームレス統合。",
+    "desc-ad":"ネイティブ広告やプロモーションツールをここに掲載できます。",
+    "desc-canva":"AI搭載のオールインワンデザインプラットフォーム、1.5億人以上が利用。",
+    "desc-elevenlabs":"世界最高水準のAI音声合成・クローン、29言語対応、驚くほど自然な音声。",
+    "desc-perplexity":"リアルタイム検索+引用付きAIサーチエンジン、研究や深い質問に最適。",
+    "desc-claude":"Anthropic製、200Kコンテキストウィンドウ、深い分析・創作・長文処理に優れる。",
+    "desc-cursor":"VS CodeベースのAIファーストエディタ、プロジェクト全体を理解しワンクリックでリファクタリング。",
+    "rank-eyebrow":"リアルタイム利用ランキング",
+    "rank-title":"AIツール リアルタイム利用ランキング",
+    "rank-desc":"アクセス数・アクティブユーザー・成長トレンドのビッグデータから生成、数秒ごとに自動更新。",
+    "rank-note":"※ ランキングデータはデモ用のシミュレーションです。実データAPIに接続すると本番ランキングになります。",
+    "footer":"© 2026 潮汐AIナビ・ページテンプレート"
+  },
+  fr: {
+    "brand":"Tide AI Annuaire",
+    "brand-sub":"TIDE · ANNUAIRE D'OUTILS IA",
+    "search-ph":"Rechercher un outil…",
+    "eyebrow":"OUTILS IA SÉLECTIONNÉS",
+    "hero-title":"Plongez dans les profondeurs de l'IA",
+    "hero-desc":"Des outils d'IA classés par catégorie — rédaction, image, code, design et productivité.",
+    "cat-all":"Tous","cat-writing":"Rédaction","cat-image":"Image","cat-code":"Code",
+    "cat-design":"Design","cat-audio":"Audio","cat-video":"Vidéo","cat-agent":"Agents IA","cat-productivity":"Productivité",
+    "ad-top":"Espace pub (bannière haute 970×90)",
+    "ad-side":"Espace pub (barre latérale 300×600)",
+    "ad-bottom":"Espace pub (bannière basse)",
+    "visit":"Visiter →",
+    "detail-toggle":"Voir les détails",
+    "sponsored":"Sponsorisé",
+    "add-card":"+ Ajouter un outil",
+    "econ-eyebrow":"DONNÉES DU MARCHÉ",
+    "econ-title":"Pouls économique de l'IA",
+    "econ-desc":"Financement, taille du marché et tendances de croissance — cliquez pour modifier les chiffres.",
+    "stat-market":"Taille du marché mondial de l'IA (2026E)",
+    "stat-funding":"Financement total IA (année en cours)",
+    "stat-unicorn":"Entreprises licornes IA",
+    "stat-growth":"Croissance trimestrielle du financement",
+    "data-note":"※ Chiffres fournis à titre d'exemple — à remplacer par des données réelles.",
+    "trend-market":"↑ +21% sur un an",
+    "trend-funding":"↑ +14% depuis janvier",
+    "trend-unicorn":"↑ +38 nouvelles",
+    "trend-growth":"↓ vs trimestre précédent",
+    "desc-chatgpt":"Outil IA phare d'OpenAI, 200M+ d'utilisateurs — rédaction, traduction et ajustement de ton.",
+    "desc-midjourney":"Générateur d'images IA le plus en vogue, qualité V6 époustouflante, via Discord.",
+    "desc-copilot":"Assistant de codage IA n°1 mondial — complétion + chat, intégration VS Code/JetBrains.",
+    "desc-ad":"Placez ici des publicités natives ou des outils sponsorisés.",
+    "desc-canva":"Plateforme de design tout-en-un boostée à l'IA — 150M+ d'utilisateurs.",
+    "desc-elevenlabs":"Synthèse vocale IA de classe mondiale, 29 langues, naturel quasi-humain.",
+    "desc-perplexity":"Moteur de recherche IA avec citations en temps réel — idéal pour la recherche.",
+    "desc-claude":"Par Anthropic — 200K contexte, excelle en analyse approfondie et rédaction créative.",
+    "desc-cursor":"Éditeur AI-first basé sur VS Code — compréhension projet + refactoring en un clic.",
+    "rank-eyebrow":"CLASSEMENT EN DIRECT",
+    "rank-title":"Classement en temps réel des outils IA",
+    "rank-desc":"Généré à partir du trafic, des utilisateurs actifs et des tendances de croissance — rafraîchi toutes les quelques secondes.",
+    "rank-note":"※ Données de classement simulées à titre de démonstration ; connectez une vraie API pour un classement réel.",
+    "footer":"© 2026 Tide AI Annuaire · Modèle de page"
+  },
+  ru: {
+    "brand":"Tide AI Каталог",
+    "brand-sub":"TIDE · КАТАЛОГ ИИ-ИНСТРУМЕНТОВ",
+    "search-ph":"Поиск инструмента…",
+    "eyebrow":"ПОДБОРКА ИИ-ИНСТРУМЕНТОВ",
+    "hero-title":"Погружение в глубины ИИ",
+    "hero-desc":"ИИ-инструменты по категориям — тексты, изображения, код, дизайн и продуктивность.",
+    "cat-all":"Все","cat-writing":"Тексты","cat-image":"Изображения","cat-code":"Код",
+    "cat-design":"Дизайн","cat-audio":"Аудио","cat-video":"Видео","cat-agent":"Агенты","cat-productivity":"Продуктивность",
+    "ad-top":"Рекламный блок (баннер сверху 970×90)",
+    "ad-side":"Рекламный блок (боковая панель 300×600)",
+    "ad-bottom":"Рекламный блок (баннер снизу)",
+    "visit":"Перейти →",
+    "detail-toggle":"Подробнее",
+    "sponsored":"Реклама",
+    "add-card":"+ Добавить карточку",
+    "econ-eyebrow":"РЫНОЧНЫЕ ДАННЫЕ",
+    "econ-title":"Пульс экономики ИИ",
+    "econ-desc":"Финансирование, размер рынка и тренды роста — нажмите на число, чтобы изменить.",
+    "stat-market":"Мировой рынок ИИ (прогноз на 2026)",
+    "stat-funding":"Общее финансирование ИИ за год",
+    "stat-unicorn":"Компании-единороги в сфере ИИ",
+    "stat-growth":"Рост финансирования кв/кв",
+    "data-note":"※ Данные приведены для примера — замените на реальные перед публикацией.",
+    "trend-market":"↑ +21% г/г",
+    "trend-funding":"↑ +14% с начала года",
+    "trend-unicorn":"↑ +38 новых",
+    "trend-growth":"↓ по сравнению с пред. кварталом",
+    "desc-chatgpt":"Флагманский ИИ-инструмент OpenAI, 200М+ пользователей — текст, перевод, стиль.",
+    "desc-midjourney":"Популярнейший ИИ-генератор изображений, V6, через Discord.",
+    "desc-copilot":"ИИ-помощник для программирования №1 в мире — автодополнение + чат.",
+    "desc-ad":"Здесь можно разместить нативную рекламу или продвигаемые инструменты.",
+    "desc-canva":"ИИ-платформа для дизайна — плакаты, презентации, 150М+ пользователей.",
+    "desc-elevenlabs":"Синтез речи мирового уровня, 29 языков, естественное звучание.",
+    "desc-perplexity":"ИИ-поисковик с цитатами в реальном времени — идеален для исследований.",
+    "desc-claude":"От Anthropic — контекст 200K, глубокий анализ и творческое письмо.",
+    "desc-cursor":"AI-first редактор на базе VS Code — понимание проекта + рефакторинг в один клик.",
+    "rank-eyebrow":"РЕЙТИНГ В РЕАЛЬНОМ ВРЕМЕНИ",
+    "rank-title":"Рейтинг ИИ-инструментов в реальном времени",
+    "rank-desc":"Формируется на основе трафика, активных пользователей и трендов роста — обновляется каждые несколько секунд.",
+    "rank-note":"※ Данные рейтинга смоделированы для демонстрации; подключите реальный API для боевого рейтинга.",
+    "footer":"© 2026 Tide AI Каталог · Шаблон страницы"
+  },
+  de: {
+    "brand":"Tide KI-Verzeichnis",
+    "brand-sub":"TIDE · KI-TOOL-VERZEICHNIS",
+    "search-ph":"Tool suchen…",
+    "eyebrow":"AUSGEWÄHLTE KI-TOOLS",
+    "hero-title":"Tauche ein in die KI-Tiefsee",
+    "hero-desc":"KI-Tools nach Kategorie — Schreiben, Bild, Code, Design und Produktivität.",
+    "cat-all":"Alle","cat-writing":"Schreiben","cat-image":"Bild","cat-code":"Code",
+    "cat-design":"Design","cat-audio":"Audio","cat-video":"Video","cat-agent":"Agenten","cat-productivity":"Produktivität",
+    "ad-top":"Werbefläche (Top-Banner 970×90)",
+    "ad-side":"Werbefläche (Seitenleiste 300×600)",
+    "ad-bottom":"Werbefläche (Fußzeilen-Banner)",
+    "visit":"Besuchen →",
+    "detail-toggle":"Details anzeigen",
+    "sponsored":"Anzeige",
+    "add-card":"+ Tool-Karte hinzufügen",
+    "econ-eyebrow":"MARKTDATEN",
+    "econ-title":"Puls der KI-Wirtschaft",
+    "econ-desc":"Finanzierung, Marktgröße und Wachstumstrends — klicke auf eine Zahl, um sie zu bearbeiten.",
+    "stat-market":"Globale KI-Marktgröße (2026E)",
+    "stat-funding":"KI-Finanzierung im laufenden Jahr",
+    "stat-unicorn":"KI-Unicorn-Unternehmen",
+    "stat-growth":"Finanzierungswachstum (QoQ)",
+    "data-note":"※ Angezeigte Werte sind Platzhalter — vor Veröffentlichung durch echte Daten ersetzen.",
+    "trend-market":"↑ +21% YoY",
+    "trend-funding":"↑ +14% YTD",
+    "trend-unicorn":"↑ +38 neue",
+    "trend-growth":"↓ ggü. Vorquartal",
+    "desc-chatgpt":"OpenAI's Flaggschiff-KI-Tool, 200M+ Nutzer — Schreiben, Übersetzen, Tonanpassung.",
+    "desc-midjourney":"Der angesagteste KI-Bildgenerator, atemberaubende V6-Qualität, via Discord.",
+    "desc-copilot":"Weltweit führender KI-Coding-Assistant — Code-Vervollständigung + Chat.",
+    "desc-ad":"Hier können native Anzeigen oder beworbene Tools platziert werden.",
+    "desc-canva":"KI-gestützte All-in-One-Designplattform — 150M+ Nutzer.",
+    "desc-elevenlabs":"Weltklasse KI-Sprachsynthese & Klonen, 29 Sprachen, fast menschlich.",
+    "desc-perplexity":"KI-Suchmaschine mit Echtzeit-Zitaten — ideal für Forschung und tiefgehende Fragen.",
+    "desc-claude":"Von Anthropic — 200K Kontext, brilliert bei Analyse und kreativem Schreiben.",
+    "desc-cursor":"AI-first Editor auf VS-Code-Basis — Projektverständnis + Ein-Klick-Refactoring.",
+    "rank-eyebrow":"LIVE-NUTZUNGSRANKING",
+    "rank-title":"Echtzeit-Nutzungsranking der KI-Tools",
+    "rank-desc":"Basierend auf Traffic, aktiven Nutzern und Wachstumstrends — aktualisiert sich alle paar Sekunden.",
+    "rank-note":"※ Ranking-Daten sind simulierte Demodaten; für echte Rankings eine reale API anbinden.",
+    "footer":"© 2026 Tide KI-Verzeichnis · Seitenvorlage"
+  },
+  ko: {
+    "brand":"타이드 AI 디렉토리",
+    "brand-sub":"TIDE · AI 툴 디렉토리",
+    "search-ph":"도구 이름 검색…",
+    "eyebrow":"엄선된 AI 도구",
+    "hero-title":"AI의 심해로 다이빙하다",
+    "hero-desc":"글쓰기, 이미지, 코딩, 디자인, 생산성별로 정리된 AI 도구 모음.",
+    "cat-all":"전체","cat-writing":"글쓰기","cat-image":"이미지","cat-code":"코딩",
+    "cat-design":"디자인","cat-audio":"오디오","cat-video":"비디오","cat-agent":"에이전트","cat-productivity":"생산성",
+    "ad-top":"광고 영역 (상단 배너 970×90)",
+    "ad-side":"광고 영역 (사이드바 300×600)",
+    "ad-bottom":"광고 영역 (하단 배너)",
+    "visit":"방문하기 →",
+    "detail-toggle":"자세히 보기",
+    "sponsored":"광고",
+    "add-card":"+ 도구 카드 추가",
+    "econ-eyebrow":"시장 데이터",
+    "econ-title":"AI 산업 경제 동향",
+    "econ-desc":"투자 유치, 시장 규모, 성장 추세 — 숫자를 클릭해 직접 수정할 수 있습니다.",
+    "stat-market":"글로벌 AI 시장 규모 (2026 전망)",
+    "stat-funding":"연간 AI 투자 유치 총액",
+    "stat-unicorn":"AI 유니콘 기업 수",
+    "stat-growth":"분기별 투자 증가율",
+    "data-note":"※ 표시된 수치는 예시입니다. 게시 전 실제 데이터로 교체해 주세요.",
+    "trend-market":"↑ 전년 대비 +21%",
+    "trend-funding":"↑ 연초 대비 +14%",
+    "trend-unicorn":"↑ 신규 38개",
+    "trend-growth":"↓ 전분기 대비",
+    "desc-chatgpt":"OpenAI 대표 AI 도구, 월 2억+ 사용자 — 글쓰기, 번역, 어조 교정 지원.",
+    "desc-midjourney":"전 세계에서 가장 인기 있는 AI 이미지 생성 도구, V6 화질, Discord 통합.",
+    "desc-copilot":"전 세계 개발자 1순위 AI 코딩 도우미 — 코드 완성 + 채팅, VS Code/JetBrains 완벽 통합.",
+    "desc-ad":"여기에 네이티브 광고나 홍보 도구를 배치할 수 있습니다.",
+    "desc-canva":"AI 기반 올인원 디자인 플랫폼, 1.5억 명 이상 사용.",
+    "desc-elevenlabs":"세계 최고 수준 AI 음성 합성 및 클로닝, 29개 언어 지원, 거의 사람 수준.",
+    "desc-perplexity":"실시간 인용 기반 AI 검색 엔진 — 연구 및 심층 질문에 최적.",
+    "desc-claude":"Anthropic 제작, 200K 컨텍스트 — 심층 분석, 창의적 글쓰기에 탁월.",
+    "desc-cursor":"VS Code 기반 AI-first 편집기 — 프로젝트 전체 이해 + 원클릭 리팩토링.",
+    "rank-eyebrow":"실시간 사용량 랭킹",
+    "rank-title":"AI 도구 실시간 사용량 랭킹",
+    "rank-desc":"트래픽, 활성 사용자, 성장 추세 빅데이터를 기반으로 생성되며 몇 초마다 자동 갱신됩니다.",
+    "rank-note":"※ 랭킹 데이터는 데모용 시뮬레이션입니다. 실제 통계 API를 연결하면 실제 랭킹이 표시됩니다.",
+    "footer":"© 2026 타이드 AI 디렉토리 · 페이지 템플릿"
+  }
+};
+
+const langNames = {
+  zh:"中文", en:"English", ja:"日本語", fr:"Français", ru:"Русский", de:"Deutsch", ko:"한국어"
+};
+
+function toggleLangMenu(){
+  document.getElementById('langMenu').classList.toggle('open');
+  document.getElementById('langCurrent').classList.toggle('open');
+}
+
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('langSelect');
+  if(!wrap.contains(e.target)){
+    document.getElementById('langMenu').classList.remove('open');
+    document.getElementById('langCurrent').classList.remove('open');
+  }
+});
+
+function setLang(lang){
+  document.documentElement.lang = lang;
+  document.getElementById('langCurrentLabel').textContent = langNames[lang];
+  document.querySelectorAll('.lang-menu button').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  document.getElementById('langMenu').classList.remove('open');
+  document.getElementById('langCurrent').classList.remove('open');
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(el.isContentEditable && el.dataset.userEdited) return;
+    if(dict[lang][key] !== undefined) el.textContent = dict[lang][key];
+  });
+  const searchInput = document.getElementById('search');
+  searchInput.placeholder = dict[lang]['search-ph'];
+}
+
+document.querySelectorAll('[contenteditable="true"][data-i18n]').forEach(el=>{
+  el.addEventListener('input', function(){ this.dataset.userEdited = "true"; });
+});
+
+document.getElementById('catBar').addEventListener('click', function(e){
+  if(!e.target.classList.contains('cat-chip')) return;
+  document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+  e.target.classList.add('active');
+  const cat = e.target.dataset.cat;
+  document.querySelectorAll('#grid .card').forEach(card=>{
+    const cardCat = card.dataset.cat;
+    card.style.display = (cat==='all' || cardCat==='all' || cardCat===cat) ? '' : 'none';
+  });
+});
+
+document.getElementById('search').addEventListener('input', function(e){
+  const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll('#grid .card').forEach(card=>{
+    const name = card.querySelector('.card-name').textContent.toLowerCase();
+    card.style.display = name.includes(q) ? '' : 'none';
+  });
+});
+
+document.getElementById('addCardBtn').addEventListener('click', function(){
+  const grid = document.getElementById('grid');
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.cat = 'all';
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-icon">新</div>
+      <div><div class="card-name" contenteditable="true">新工具名称</div><div class="card-tag" contenteditable="true">分类</div></div>
+    </div>
+    <details class="card-details">
+      <summary>查看详情</summary>
+      <p class="card-full-desc" contenteditable="true">点击这里编辑工具简介，控制在一两句话左右就好…</p>
+    </details>
+    <a class="card-visit" href="#" target="_blank" rel="noopener">前往访问 →</a>
+  `;
+  grid.insertBefore(card, this);
+  observeReveal(card);
+});
+
+/* ================= 滚动可见性动画 ================= */
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+
+function observeReveal(el){
+  el.classList.add('reveal');
+  revealObserver.observe(el);
+}
+
+function initScrollReveal(){
+  const targets = [
+    '.hero h1', '.hero p', '.hero .eyebrow',
+    '.cat-bar', '.stats-head', '.chart-wrap',
+    '.rank-head', '.rank-list',
+    ...document.querySelectorAll('.stat-card')
+  ];
+  document.querySelectorAll('#grid .card, .stat-card').forEach((el, i)=>{
+    el.style.setProperty('--stagger', i % 12);
+  });
+  document.querySelectorAll('#grid .card, .stat-card, .stats-head, .chart-wrap, .rank-head, .rank-list').forEach(observeReveal);
+}
+initScrollReveal();
+
+/* 鼠标移动时背景光晕跟随，营造轻微的视差感 */
+window.addEventListener('mousemove', (e)=>{
+  const x = (e.clientX / window.innerWidth * 100).toFixed(1);
+  const y = (e.clientY / window.innerHeight * 60).toFixed(1);
+  document.documentElement.style.setProperty('--mx', x + '%');
+  document.documentElement.style.setProperty('--my', y + '%');
+}, { passive:true });
+
+/* ================= 实时使用量排行榜 ================= */
+const rankData = [
+  { icon:'🏆', name:'ChatGPT',        cat:'writing',      base:812 },
+  { icon:'✨', name:'Gemini',         cat:'writing',      base:634 },
+  { icon:'🎨', name:'Midjourney',     cat:'image',        base:398 },
+  { icon:'💻', name:'GitHub Copilot', cat:'code',         base:355 },
+  { icon:'🐋', name:'DeepSeek',       cat:'writing',      base:312 },
+  { icon:'🧠', name:'Claude',         cat:'writing',      base:289 },
+  { icon:'⚡', name:'Perplexity AI',  cat:'productivity', base:201 },
+  { icon:'🎯', name:'Canva AI',       cat:'design',       base:187 },
+  { icon:'🌙', name:'Kimi',           cat:'writing',      base:164 },
+  { icon:'🔥', name:'Cursor',         cat:'code',         base:149 },
+  { icon:'🎵', name:'Suno',           cat:'audio',        base:118 },
+  { icon:'🎬', name:'Runway',         cat:'video',        base:96  },
+];
+
+let rankState = rankData.map(d => ({ ...d, value: d.base + Math.random()*20 }));
+
+function catLabel(cat){
+  const el = document.querySelector(`.cat-chip[data-cat="${cat}"]`);
+  return el ? el.textContent : cat;
+}
+
+function formatUsage(v){
+  return v.toFixed(1);
+}
+
+function renderRankList(animateNumbers){
+  rankState.sort((a,b)=>b.value - a.value);
+  const max = rankState[0].value;
+  const list = document.getElementById('rankList');
+  if(!list) return;
+
+  if(list.children.length === 0){
+    rankState.forEach((item, i)=>{
+      const row = document.createElement('div');
+      row.className = 'rank-row';
+      row.dataset.name = item.name;
+      row.dataset.rank = i+1;
+      row.innerHTML = `
+        <div class="rank-num">${i+1}</div>
+        <div class="rank-icon">${item.icon}</div>
+        <div class="rank-info">
+          <div class="rank-name">${item.name}</div>
+          <div class="rank-cat">${catLabel(item.cat)}</div>
+        </div>
+        <div>
+          <div class="rank-usage" data-value>${formatUsage(item.value)}<span class="unit">M DAU</span></div>
+          <div class="rank-trend up" data-trend>↑ 实时统计</div>
+        </div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${(item.value/max*100).toFixed(1)}%"></div></div>
+      `;
+      list.appendChild(row);
+    });
+    return;
+  }
+
+  rankState.forEach((item, i)=>{
+    const row = list.querySelector(`.rank-row[data-name="${CSS.escape(item.name)}"]`);
+    if(!row) return;
+    row.dataset.rank = i+1;
+    row.querySelector('.rank-num').textContent = i+1;
+    row.querySelector('[data-value]').innerHTML = `${formatUsage(item.value)}<span class="unit">M DAU</span>`;
+    row.querySelector('.rank-bar').style.width = (item.value/max*100).toFixed(1) + '%';
+    const trendEl = row.querySelector('[data-trend]');
+    const delta = item.value - item._prev;
+    if(delta > 0.05){
+      trendEl.textContent = `↑ +${delta.toFixed(2)}M`;
+      trendEl.className = 'rank-trend up';
+    } else if(delta < -0.05){
+      trendEl.textContent = `↓ ${delta.toFixed(2)}M`;
+      trendEl.className = 'rank-trend down';
+    }
+    if(i === 0) list.insertBefore(row, list.firstChild);
+    else {
+      const prevRow = list.children[i-1];
+      if(prevRow && prevRow !== row) list.insertBefore(row, prevRow.nextSibling);
+    }
+  });
+}
+
+renderRankList();
+
+setInterval(()=>{
+  rankState = rankState.map(item => {
+    const drift = (Math.random() - 0.48) * 6; // 轻微随机波动，模拟真实流量抖动
+    return { ...item, _prev: item.value, value: Math.max(20, item.value + drift) };
+  });
+  renderRankList(true);
+}, 3200);
+</script>
+
+</body>
+</html>
